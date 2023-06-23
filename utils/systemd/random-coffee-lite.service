@@ -4,8 +4,8 @@ Description=SecretChannel
 
 [Service]
 Type=simple
-WorkingDirectory=/home/ubuntu/post-tts/
-ExecStart=/home/ubuntu/post-tts/env/bin/python3 /home/ubuntu/post-tts/app.py
+WorkingDirectory=/home/ubuntu/random-coffee-lite/
+ExecStart=/home/ubuntu/random-coffee-lite/env/bin/python3 /home/ubuntu/random-coffee-lite/app.py
 Restart=always
 
 [Install]
