@@ -15,7 +15,17 @@ async def process_check_name(message: types.Message, state: FSMContext):
         async with state.proxy() as data:
             data['name'] = message.from_user.first_name
 
-        await message.answer("Славно! А теперь отправь фотографию", reply_markup=types.ReplyKeyboardRemove())
+        profile = await message.from_user.get_profile_photos()
+
+        if profile.photos:
+            await message.answer_photo(profile.photos[0][-1].file_id)
+            await message.answer("Это твоя фотография?", reply_markup=keyboard_buttons.yes_no())
+
+            async with state.proxy() as data:
+                data['photo'] = profile.photos[0][-1].file_id
+        else:
+            await message.answer("Славно! А теперь отправь фотографию", reply_markup=types.ReplyKeyboardRemove())
+
         await Registration.next()
     
     elif message.text == 'Исправить':
@@ -24,35 +34,54 @@ async def process_check_name(message: types.Message, state: FSMContext):
     else:
         async with state.proxy() as data:
             data['name'] = message.text
-        await message.answer("Славно! А теперь отправь фотографию", reply_markup=types.ReplyKeyboardRemove())
+        
+        profile = await message.from_user.get_profile_photos()
+
+        if profile.photos:
+            await message.answer_photo(profile.photos[0][-1].file_id)
+            await message.answer("Это твоя фотография?", reply_markup=keyboard_buttons.yes_no())
+
+            async with state.proxy() as data:
+                data['photo'] = profile.photos[0][-1].file_id
+        else:
+            await message.answer("Славно! А теперь отправь фотографию", reply_markup=types.ReplyKeyboardRemove())
+
         await Registration.next()
 
 
-@dp.message_handler(content_types='photo', state=Registration.photo)
+@dp.message_handler(content_types=['text', 'photo'], state=Registration.photo)
+async def process_photo(message: types.Message, state: FSMContext):
+    if message.photo:
+        async with state.proxy() as data:
+            data['photo'] = message.photo[-1].file_id
+
+        await message.answer("А теперь отправь свой номер телефона", reply_markup=keyboard_buttons.request_contact())
+        await Registration.next()
+
+    if message.text == 'Верно':
+        await message.answer("А теперь отправь свой номер телефона", reply_markup=keyboard_buttons.request_contact())
+        await Registration.next()
+    
+    elif message.text == 'Исправить':
+        await message.answer("Тогда отправь свою фотографию")
+
+
+@dp.message_handler(content_types=['contact'], state=Registration.phone_number)
 async def process_phone_number(message: types.Message, state: FSMContext):
     async with state.proxy() as data:
-        data['photo'] = message.photo[-1].file_id
+        data['phone_number'] = message.contact.phone_number
 
-    await message.answer("А теперь отправь свой номер телефона (опционально)")
-    await Registration.next()
-
-
-@dp.message_handler(state=Registration.phone_number)
-async def process_phone_number(message: types.Message, state: FSMContext):
-    async with state.proxy() as data:
-        data['phone_number'] = message.text
-
-    await message.answer("Ещё мне нужно знать, в каком ты городе.")
-    await Registration.next()
-
-
-@dp.message_handler(state=Registration.town)
-async def process_town(message: types.Message, state: FSMContext):
-    async with state.proxy() as data:
-        data['town'] = message.text
-        
     await message.answer("Живешь в Израиле?:", reply_markup = keyboard_buttons.poll())
     await Registration.next()
+
+
+# @dp.message_handler(state=Registration.town)
+# async def process_town(message: types.Message, state: FSMContext):
+#     async with state.proxy() as data:
+#         data['town'] = message.text
+        
+#     await message.answer("Живешь в Израиле?:", reply_markup = keyboard_buttons.poll())
+#     await Registration.next()
 
 
 @dp.message_handler(state=Registration.status_in_israel)
@@ -78,7 +107,7 @@ async def process_site(message: types.Message, state: FSMContext):
     async with state.proxy() as data:
         data['site'] = message.text
         
-    await message.answer("Ссылка на Instagram")
+    await message.answer("Ссылка на Instagram", reply_markup=keyboard_buttons.skip())
     await Registration.next()
 
 
@@ -87,7 +116,7 @@ async def process_instagram(message: types.Message, state: FSMContext):
     async with state.proxy() as data:
         data['instagram'] = message.text
         
-    await message.answer("Ссылка на Facebook")
+    await message.answer("Ссылка на Facebook", reply_markup=keyboard_buttons.skip())
     await Registration.next()
 
 
@@ -96,7 +125,7 @@ async def process_facebook(message: types.Message, state: FSMContext):
     async with state.proxy() as data:
         data['facebook'] = message.text
         
-    await message.answer("Ссылка на Linkedin")
+    await message.answer("Ссылка на Linkedin", reply_markup=keyboard_buttons.skip())
     await Registration.next()
 
 
@@ -105,7 +134,7 @@ async def process_linkedin(message: types.Message, state: FSMContext):
     async with state.proxy() as data:
         data['linkedin'] = message.text
         
-    await message.answer("Участник сообществ/клубов/бизнес-школ")
+    await message.answer("Участник сообществ/клубов/бизнес-школ", reply_markup=keyboard_buttons.skip())
     await Registration.next()
 
 
@@ -114,7 +143,7 @@ async def process_member(message: types.Message, state: FSMContext):
     async with state.proxy() as data:
         data['member'] = message.text
         
-    await message.answer("Укажите свое хобби")
+    await message.answer("Укажите свое хобби", reply_markup=types.ReplyKeyboardRemove())
     await Registration.next()
 
 
@@ -123,7 +152,7 @@ async def process_hobby(message: types.Message, state: FSMContext):
     async with state.proxy() as data:
         data['hobby'] = message.text
         
-    await message.answer("Запрос")
+    await message.answer("Твой запрос к участникам клуба")
     await Registration.next()
 
 
@@ -132,7 +161,7 @@ async def process_query(message: types.Message, state: FSMContext):
     async with state.proxy() as data:
         data['query'] = message.text
         
-    await message.answer("Чем могу помочь?")
+    await message.answer("Напиши чем можешь помочь участникам клуба")
     await Registration.next()
 
 
@@ -147,10 +176,10 @@ async def process_question_and_finish(message: types.Message, state: FSMContext)
         status_in_israel = data.get('status_in_israel')
         sphere = data.get('sphere')
         site = data.get('site')
-        instagram = data.get('instagram')
-        facebook = data.get('facebook')
-        linkedin = data.get('linkedin')
-        member = data.get('member')
+        instagram = 'Не указано' if data.get('instagram') == 'Пропустить' else data.get('instagram')
+        facebook = 'Не указано' if data.get('facebook') == 'Пропустить' else data.get('facebook')
+        linkedin = 'Не указано' if data.get('linkedin') == 'Пропустить' else data.get('linkedin')
+        member = 'Не указано' if data.get('member') == 'Пропустить' else data.get('member')
         hobby = data.get('hobby')
         query = data.get('query')
         question = message.text
@@ -174,7 +203,7 @@ async def process_question_and_finish(message: types.Message, state: FSMContext)
         question=question
     )
 
-    await message.answer("Ваш профиль успешно создан!")
+    await message.answer("Ваш профиль успешно создан!", reply_markup=keyboard_buttons.main_menu())
     await state.finish()
 
 

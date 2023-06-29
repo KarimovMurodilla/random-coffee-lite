@@ -40,7 +40,7 @@ async def bot_start(message: types.Message, state: FSMContext):
         name = message.from_user.first_name
 
     await message.answer(f"Давай заполним твой профиль? Твоё имя {name}",
-        reply_markup=keyboard_buttons.check_name()
+        reply_markup=keyboard_buttons.yes_no()
     )
 
     await Registration.name.set()
@@ -55,7 +55,7 @@ async def bot_start(message: types.Message, state: FSMContext):
     users = await db.get_all_users()
 
     async with state.proxy() as data:
-        data[user.id] = 0
+        data['page'] = 0
 
     if users:
         user = users[0]
@@ -63,7 +63,7 @@ async def bot_start(message: types.Message, state: FSMContext):
             photo = user.photo,
             caption  =  f"Имя: {user.name}\n"
                         f"Номер телефона: {user.phone_number}\n"
-                        f"Город: {user.town}\n"
+                        # f"Город: {user.town}\n"
                         f"Сфера бизнеса: {user.sphere}\n"
                         f"Сайт компании: {user.site}\n"
                         f"Ссылка на Instagram: {user.instagram}\n"
@@ -82,6 +82,6 @@ async def photo(message: types.Message, state: FSMContext):
     await message.answer_photo('AgACAgIAAxkBAAIRjWSVcMYasC9msoB4Mc9JUOpzEDadAAIVzDEbpgpYSNkfgTA_IG4lAQADAgADeQADLwQ')
 
 
-@dp.message_handler(content_types='photo')
-async def photo(message: types.Message):
-    print(message.photo[-1].file_id)
+# @dp.message_handler(content_types='photo')
+# async def photo(message: types.Message):
+#     print(message.photo[-1].file_id)

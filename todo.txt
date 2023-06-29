@@ -1,0 +1,7 @@
+# TODO
+1. Get profile image
+2. Request contact button
+3. Remove request city
+4. Add skip button (in requesting social networks)
+5. Rewrite (Zapros and Chem mogu pomoch?)
+6. Show main menu at finish

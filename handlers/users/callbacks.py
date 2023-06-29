@@ -7,23 +7,26 @@ from keyboards.inline import inline_buttons
 
 @dp.callback_query_handler(text_contains='back')
 async def queryFunc(c: types.CallbackQuery, state: FSMContext):
-    tg_user = c.from_user
     users = await db.get_all_users()
 
     async with state.proxy() as data:
-        if data[tg_user.id]:
-            if data[tg_user.id] > 0:
-                data[tg_user.id] -= 1
+        if data['page'] > 0:
+            data['page'] -= 1
+        elif data['page'] == 0:
+            await c.answer("Это первая страница")
             
-        page_num = data[tg_user.id]
+        page_num = data['page']
     
+    print(page_num)
+    await c.answer()
+
     user = users[page_num]
     await c.message.edit_media(
         media = types.InputMedia(
             media = user.photo,
             caption  =  f"Имя: {user.name}\n"
                         f"Номер телефона: {user.phone_number}\n"
-                        f"Город: {user.town}\n"
+                        # f"Город: {user.town}\n"
                         f"Сфера бизнеса: {user.sphere}\n"
                         f"Сайт компании: {user.site}\n"
                         f"Ссылка на Instagram: {user.instagram}\n"
@@ -37,22 +40,25 @@ async def queryFunc(c: types.CallbackQuery, state: FSMContext):
 
 @dp.callback_query_handler(text_contains='next')
 async def queryFunc(c: types.CallbackQuery, state: FSMContext):
-    tg_user = c.from_user
     users = await db.get_all_users()
 
     async with state.proxy() as data:
-        if data[tg_user.id] < len(users):
-            data[tg_user.id] += 1
-            
-        page_num = data[tg_user.id]
-    
+        if data['page'] < (len(users) - 1):
+            data['page'] += 1
+        
+        else:
+            await c.answer("Это последняя страница")
+        page_num = data['page']
+
+    await c.answer()
+
     user = users[page_num]
     await c.message.edit_media(
         media = types.InputMedia(
             media = user.photo,
             caption  =  f"Имя: {user.name}\n"
                         f"Номер телефона: {user.phone_number}\n"
-                        f"Город: {user.town}\n"
+                        # f"Город: {user.town}\n"
                         f"Сфера бизнеса: {user.sphere}\n"
                         f"Сайт компании: {user.site}\n"
                         f"Ссылка на Instagram: {user.instagram}\n"

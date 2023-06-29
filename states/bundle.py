@@ -5,7 +5,7 @@ class Registration(StatesGroup):
 	name = State()
 	photo = State()
 	phone_number = State()
-	town = State()
+	# town = State()
 	status_in_israel = State()
 	sphere = State()
 	site = State()
