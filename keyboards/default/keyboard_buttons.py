@@ -22,14 +22,14 @@ def yes_no():
 
 def poll():
     menu = types.ReplyKeyboardMarkup(resize_keyboard=True, row_width=1, one_time_keyboard=True)
-    btn1 = types.KeyboardButton("Да")
+    # btn1 = types.KeyboardButton("Да")
     btn2 = types.KeyboardButton("Постоянно")
     btn3 = types.KeyboardButton("Часто бываю")
     btn4 = types.KeyboardButton("Иногда бываю")
     btn5 = types.KeyboardButton("Нет, но скоро приеду")
     btn6 = types.KeyboardButton("Нет")
-    btn7 = types.KeyboardButton("Не живу")
-    menu.add(btn1, btn2, btn3, btn4, btn5, btn6, btn7)
+    # btn7 = types.KeyboardButton("Не живу")
+    menu.add(btn2, btn3, btn4, btn5, btn6)
 
     return menu
 
