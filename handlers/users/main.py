@@ -16,9 +16,6 @@ async def bot_start(message: types.Message, state: FSMContext):
     user = message.from_user
     user_in_db = await db.get_user(user.id)
 
-    print(user_in_db)
-
-
     if not user_in_db:
         await message.answer(f"Давай заполним твой профиль? Твоё имя {message.from_user.first_name}",
             reply_markup=keyboard_buttons.yes_no()
