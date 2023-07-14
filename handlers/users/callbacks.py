@@ -26,13 +26,11 @@ async def queryFunc(c: types.CallbackQuery, state: FSMContext):
             media = user.photo,
             caption  =  f"Имя: {user.name}\n"
                         f"Номер телефона: {user.phone_number}\n"
-                        # f"Город: {user.town}\n"
-                        f"Сфера бизнеса: {user.sphere}\n"
-                        f"Сайт компании: {user.site}\n"
-                        f"Ссылка на Instagram: {user.instagram}\n"
-                        f"Ссылка на Facebook: {user.facebook}\n"
-                        f"Ссылка на Linkedin: {user.linkedin}\n"
-                        f"Хобби: {user.hobby}",            
+                        f"Ссылка на Telegram: {user.username}\n"
+                        f"Кратко о себе: {user.about}\n"
+                        f"Город: {user.family}\n"
+                        f"Хобби: {user.hobby}\n"
+                        f"Дополнительно: {user.additional}\n",           
             ),
         reply_markup=inline_buttons.pagination()
     )
@@ -58,13 +56,11 @@ async def queryFunc(c: types.CallbackQuery, state: FSMContext):
             media = user.photo,
             caption  =  f"Имя: {user.name}\n"
                         f"Номер телефона: {user.phone_number}\n"
-                        # f"Город: {user.town}\n"
-                        f"Сфера бизнеса: {user.sphere}\n"
-                        f"Сайт компании: {user.site}\n"
-                        f"Ссылка на Instagram: {user.instagram}\n"
-                        f"Ссылка на Facebook: {user.facebook}\n"
-                        f"Ссылка на Linkedin: {user.linkedin}\n"
-                        f"Хобби: {user.hobby}",            
+                        f"Ссылка на Telegram: {user.username}\n"
+                        f"Кратко о себе: {user.about}\n"
+                        f"Город: {user.family}\n"
+                        f"Хобби: {user.hobby}\n"
+                        f"Дополнительно: {user.additional}\n",          
             ),
         reply_markup=inline_buttons.pagination()
     )

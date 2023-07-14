@@ -6,6 +6,7 @@ from keyboards.inline import inline_buttons
 from keyboards.default import keyboard_buttons
 
 from loader import dp, db
+from data.config import PHOTO_FILE_ID
 from states.bundle import Registration
 
 
@@ -17,10 +18,13 @@ async def bot_start(message: types.Message, state: FSMContext):
     user_in_db = await db.get_user(user.id)
 
     if not user_in_db:
-        await message.answer(f"Давай заполним твой профиль? Твоё имя {message.from_user.first_name}",
-            reply_markup=keyboard_buttons.yes_no()
+        await message.answer(
+            "Привет! Мы создаем карточки с интро и фото участников, чтобы было проще и удобнее знакомиться, общаться, а также  находить общие интерсы.\n\n"
+
+            "Поэтому зададим несколько вопросов.  Ответы вместе с фото и контактом - будут сформированы в твою карточку и будут в доступе у других участников клуба.\n"
+            "Начнем?",
+                reply_markup=keyboard_buttons.lets_go()
         )
-        await Registration.name.set()
     
     else:
         await message.answer(f"Привет {user_in_db.name}!", reply_markup=keyboard_buttons.main_menu())
@@ -28,27 +32,19 @@ async def bot_start(message: types.Message, state: FSMContext):
 
 # ---Регистрация---
 @dp.message_handler(text="Регистрация", state='*')
-async def bot_start(message: types.Message, state: FSMContext):
-    await state.finish()
-    user = message.from_user
-    user_in_db = await db.get_user(user.id)
+async def registration(message: types.Message, state: FSMContext):
+    await message.answer(
+        "Привет! Мы создаем карточки с интро и фото участников, чтобы было проще и удобнее знакомиться, общаться, а также  находить общие интерсы.\n\n"
 
-    if user_in_db:
-        name = user_in_db.name
-    
-    else:
-        name = message.from_user.first_name
-
-    await message.answer(f"Давай заполним твой профиль? Твоё имя {name}",
-        reply_markup=keyboard_buttons.yes_no()
+        "Поэтому зададим несколько вопросов.  Ответы вместе с фото и контактом - будут сформированы в твою карточку и будут в доступе у других участников клуба.\n"
+        "Начнем?",
+            reply_markup=keyboard_buttons.lets_go()
     )
-
-    await Registration.name.set()
 
 
 # ---Посмотреть участников---
 @dp.message_handler(text="Посмотреть участников", state='*')
-async def bot_start(message: types.Message, state: FSMContext):
+async def show_members(message: types.Message, state: FSMContext):
     await state.finish()
 
     user = message.from_user
@@ -63,13 +59,11 @@ async def bot_start(message: types.Message, state: FSMContext):
             photo = user.photo,
             caption  =  f"Имя: {user.name}\n"
                         f"Номер телефона: {user.phone_number}\n"
-                        # f"Город: {user.town}\n"
-                        f"Сфера бизнеса: {user.sphere}\n"
-                        f"Сайт компании: {user.site}\n"
-                        f"Ссылка на Instagram: {user.instagram}\n"
-                        f"Ссылка на Facebook: {user.facebook}\n"
-                        f"Ссылка на Linkedin: {user.linkedin}\n"
-                        f"Хобби: {user.hobby}",
+                        f"Ссылка на Telegram: {user.username}\n"
+                        f"Кратко о себе: {user.about}\n"
+                        f"Город: {user.family}\n"
+                        f"Хобби: {user.hobby}\n"
+                        f"Дополнительно: {user.additional}\n",
             reply_markup=inline_buttons.pagination()
         )
 
@@ -78,8 +72,8 @@ async def bot_start(message: types.Message, state: FSMContext):
 
 
 @dp.message_handler(text='Расписание', state='*')
-async def photo(message: types.Message, state: FSMContext):
-    await message.answer_photo('AgACAgIAAxkBAAIRjWSVcMYasC9msoB4Mc9JUOpzEDadAAIVzDEbpgpYSNkfgTA_IG4lAQADAgADeQADLwQ')
+async def schedule(message: types.Message, state: FSMContext):
+    await message.answer_photo(PHOTO_FILE_ID)
 
 
 # @dp.message_handler(content_types='photo')

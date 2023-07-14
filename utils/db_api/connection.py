@@ -37,22 +37,14 @@ class Database:
     async def reg_user(
         self, 
         user_id: str, 
-        username: str, 
         name: str,
-        photo: str,
+        username: str,
         phone_number: str, 
-        town: str, 
-        status_in_israel: str, 
-        sphere: str, 
-        site: str, 
-        instagram: str, 
-        facebook: str, 
-        linkedin: str, 
-        member: str, 
+        photo: str,
+        about: str, 
+        family: str, 
         hobby: str, 
-        query: str, 
-        question: str, 
-    
+        additional: str 
     ):
         """Регистрация пользователя"""
         async with self.async_session() as session:
@@ -60,21 +52,14 @@ class Database:
             await session.merge(
                 User(
                     user_id=user_id,
-                    username=username,
                     name=name,
-                    photo=photo,
+                    username=username,
                     phone_number=phone_number,
-                    town=town,
-                    status_in_israel=status_in_israel,
-                    sphere=sphere,
-                    site=site,
-                    instagram=instagram,
-                    facebook=facebook,
-                    linkedin=linkedin,
-                    member=member,
+                    photo=photo,
+                    about=about,
+                    family=family,
                     hobby=hobby,
-                    query=query,
-                    question=question
+                    additional=additional
                 )
             )
             await session.commit()
