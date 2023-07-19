@@ -51,20 +51,40 @@ async def process_phone_number(message: types.Message, state: FSMContext):
         async with state.proxy() as data:
             data['phone_number'] = 'Пропустить'
 
-    await message.answer("Какую фото можно использовать?", reply_markup=types.ReplyKeyboardRemove())
-    await Registration.next()
+    photo = await message.from_user.get_profile_photos()
+    
+    await message.answer("Какое фото можно использовать?", reply_markup=keyboard_buttons.photo_choose())
+    await message.answer_photo(photo.photos[0][-1].file_id)
 
 
-@dp.message_handler(content_types=['photo'], state=Registration.photo)
-async def process_photo(message: types.Message, state: FSMContext):
     async with state.proxy() as data:
-        data['photo'] = message.photo[-1].file_id
+        data['photo'] = photo.photos[0][-1].file_id
 
-    await message.answer(
-        "Расскажи кратко о своем бизнесе, чем занимаешься, экспертиза",
-            reply_markup=keyboard_buttons.skip()
-        )
     await Registration.next()
+
+
+@dp.message_handler(content_types=['photo', 'text'], state=Registration.photo)
+async def process_photo(message: types.Message, state: FSMContext):
+    if message.text:
+        if message.text == 'Подтвердить':
+            await message.answer(
+                "Расскажи кратко о своем бизнесе, чем занимаешься, экспертиза",
+                    reply_markup=keyboard_buttons.skip()
+                )
+            await Registration.next()  
+
+        elif message.text == 'Загрузить':
+            await message.answer("Отправь свою фотографию")
+
+    if message.photo:
+        async with state.proxy() as data:
+            data['photo'] = message.photo[-1].file_id
+
+        await message.answer(
+            "Расскажи кратко о своем бизнесе, чем занимаешься, экспертиза",
+                reply_markup=keyboard_buttons.skip()
+            )
+        await Registration.next()
 
 
 @dp.message_handler(state=Registration.about)

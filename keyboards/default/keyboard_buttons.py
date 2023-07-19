@@ -35,6 +35,13 @@ def show_username(username):
 
 #     return menu
 
+def photo_choose():
+    menu = types.ReplyKeyboardMarkup(resize_keyboard=True, row_width=1)
+    btn1 = types.KeyboardButton("Подтвердить")
+    btn2 = types.KeyboardButton("Загрузить")
+    menu.add(btn1, btn2)
+
+    return menu
 
 def show_contact():
     menu = types.ReplyKeyboardMarkup(resize_keyboard=True, row_width=1)
