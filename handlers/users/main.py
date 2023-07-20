@@ -11,7 +11,7 @@ from states.bundle import Registration
 
 
 # ---Start---
-@dp.message_handler(CommandStart(), state='*')
+@dp.message_handler(text = ['/start', 'Назад'], state='*')
 async def bot_start(message: types.Message, state: FSMContext):
     await state.finish()
     user = message.from_user
@@ -38,7 +38,7 @@ async def registration(message: types.Message, state: FSMContext):
 
         "Поэтому зададим несколько вопросов.  Ответы вместе с фото и контактом - будут сформированы в твою карточку и будут в доступе у других участников клуба.\n"
         "Начнем?",
-            reply_markup=keyboard_buttons.lets_go()
+            reply_markup=keyboard_buttons.lets_go().add(types.KeyboardButton("Назад"))
     )
 
 
@@ -76,6 +76,6 @@ async def schedule(message: types.Message, state: FSMContext):
     await message.answer_photo(PHOTO_FILE_ID)
 
 
-# @dp.message_handler(content_types='photo')
-# async def photo(message: types.Message):
-#     print(message.photo[-1].file_id)
+@dp.message_handler(content_types='photo')
+async def photo(message: types.Message):
+    print(message.photo[-1].file_id)
