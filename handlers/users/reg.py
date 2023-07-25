@@ -52,13 +52,16 @@ async def process_phone_number(message: types.Message, state: FSMContext):
             data['phone_number'] = 'Пропустить'
 
     photo = await message.from_user.get_profile_photos()
-    
-    await message.answer("Какое фото можно использовать?", reply_markup=keyboard_buttons.photo_choose())
-    await message.answer_photo(photo.photos[0][-1].file_id)
 
+    if photo.photos:
+        await message.answer("Какое фото можно использовать?", reply_markup=keyboard_buttons.photo_choose())
+        await message.answer_photo(photo.photos[0][-1].file_id)
 
-    async with state.proxy() as data:
-        data['photo'] = photo.photos[0][-1].file_id
+        async with state.proxy() as data:
+            data['photo'] = photo.photos[0][-1].file_id
+
+    else:
+        await message.answer("Какое фото можно использовать?", reply_markup=keyboard_buttons.photo_choose(upload=True))
 
     await Registration.next()
 

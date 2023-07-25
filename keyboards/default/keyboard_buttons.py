@@ -35,11 +35,15 @@ def show_username(username):
 
 #     return menu
 
-def photo_choose():
+def photo_choose(upload: bool = False):
     menu = types.ReplyKeyboardMarkup(resize_keyboard=True, row_width=1)
     btn1 = types.KeyboardButton("Подтвердить")
     btn2 = types.KeyboardButton("Загрузить")
-    menu.add(btn1, btn2)
+
+    if not upload:
+        menu.add(btn1, btn2)
+    else:
+        menu.add(btn2)
 
     return menu
 
